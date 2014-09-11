@@ -2,17 +2,13 @@ package com.homework.parsejson.view;
 
 import com.homework.parsejson.R;
 import com.homework.parsejson.constant.GlobalConstant;
-import com.homework.parsejson.database.Country;
-import com.homework.parsejson.imagerloader.ImagerLoader;
-import com.homework.parsejson.josnparser.CountryJsonParser;
+import com.homework.parsejson.josnparser.ParseJsonTask;
 import com.homework.parsejson.utils.Utils;
 
 
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,19 +19,15 @@ public class MainActivity extends Activity{
 	
 	private TextView mTextView;
 	private ListView mListView;
-	private Handler mHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			handleMessages(msg);
-			super.handleMessage(msg);
-		}
-	};
+
 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
+		
 		mTextView = (TextView)findViewById(R.id.textview);
 		mListView = (ListView)findViewById(R.id.listview);
 		
@@ -44,47 +36,18 @@ public class MainActivity extends Activity{
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				loadJsonThread();
-			}
-		});
-		loadJsonThread();
-	}
-	
-	private void loadJsonThread(){
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
 				loadJson();
 			}
-		}).start();
-	}
-	
-	private synchronized void loadJson() {
-		Utils.LOGD("startLoadJson run");
-		ImagerLoader.getInstance().clearCache();
-		CountryJsonParser.getInstance().parse(GlobalConstant.jsonUrl, mHandler);
+		});
 		
+		loadJson();
 	}
+
 	
-
-	protected void handleMessages(Message msg) {
-		switch (msg.what) {
-		case GlobalConstant.MSG_JSONDOWNLOADFINISHED:
-			Country country = (Country)msg.obj;
-			
-			mTextView.setText(country.getTitle());
-			ListViewAdapter adapter = new ListViewAdapter(this, country, mListView);
-			mListView.setAdapter(adapter);
-			adapter.notifyDataSetChanged();
-			break;
-		
-		default:
-			break;
-		}
-
+	private  void loadJson() {
+		Utils.LOGD("LoadJson run");
+		ParseJsonTask parseJsonTask = new ParseJsonTask(this, mTextView, mListView);
+		parseJsonTask.execute(GlobalConstant.JSONURL);
 	}
 	
 }
