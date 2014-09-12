@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.Executors;
 
 import com.homework.parsejson.constant.GlobalConstant;
 import com.homework.parsejson.database.Country;
@@ -58,11 +59,13 @@ public class ImagerLoader {
 		return gImageLoader;
 	}
 
-	public void loadHttpImage(final String imgUrl,
-			final ImagerLoadListener imagerLoadListener) {
+	public void loadHttpImage(String imgUrl, ImagerLoadListener imagerLoadListener) {
+		
 		LoadHttpImageAsyncTask loadImageTask = new LoadHttpImageAsyncTask(
 				imagerLoadListener);
-		loadImageTask.execute(imgUrl);
+		loadImageTask.executeOnExecutor(Executors.newFixedThreadPool(GlobalConstant.EXECUTOR_SIZE), imgUrl);
+		
+		
 	}
 
 	public void clearCache() {
@@ -81,12 +84,14 @@ public class ImagerLoader {
 
 		@Override
 		protected Bitmap doInBackground(String... arg0) {
-
 			mImgUrl = arg0[0];
+			
+			/**
+			 * if has cache, the thread will Completed as soon as possible
+			 */
 			Bitmap bitmap = gMemoryCache.get(mImgUrl);
-
-			if (bitmap == null) {
-				Utils.LOGD("get bitmap from cache, but bitmap = null");
+			
+			if(bitmap==null){
 				bitmap = downloadImage(mImgUrl);
 				if (bitmap != null) {
 					gMemoryCache.put(mImgUrl, bitmap);
@@ -116,8 +121,10 @@ public class ImagerLoader {
 				bitmap = BitmapFactory.decodeStream(is);
 				is.close();
 			} catch (MalformedURLException e) {
+				mImagerLoadListener.loadImageError(e.toString(), mImgUrl);
 				e.printStackTrace();
 			} catch (IOException e) {
+				mImagerLoadListener.loadImageError(e.toString(), mImgUrl);
 				e.printStackTrace();
 			}
 			return bitmap;

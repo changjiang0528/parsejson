@@ -75,7 +75,7 @@ public class ListViewAdapter extends BaseAdapter {
 		/**
 		 * if Text is null, Not Display TextView
 		 */
-		text = mCountry.getFeatureTitleByPos(position);
+		text = mCountry.getFeature(position).mTitle;
 		if (text == null) {
 			viewHolder.title.setVisibility(View.GONE);
 		} else {
@@ -83,7 +83,7 @@ public class ListViewAdapter extends BaseAdapter {
 			viewHolder.title.setText(text);
 		}
 
-		text = mCountry.getFeatureDescriptionByPos(position);
+		text = mCountry.getFeature(position).mDescription;
 		if (text == null) {
 			viewHolder.desc.setVisibility(View.GONE);
 		} else {
@@ -94,12 +94,13 @@ public class ListViewAdapter extends BaseAdapter {
 		/**
 		 * for convertView's reusing, set ImageBitmap = null
 		 */
+		viewHolder.imageView.setVisibility(View.GONE);
 		viewHolder.imageView.setImageBitmap(null);
 
 		/**
 		 * load image
 		 */
-		String imageUrl = mCountry.getFeatureImageHrefByPos(position);
+		String imageUrl = mCountry.getFeature(position).mImageHref;
 		Utils.LOGD("loadImage url = " + imageUrl);
 
 		if (imageUrl != null) {
@@ -110,9 +111,12 @@ public class ListViewAdapter extends BaseAdapter {
 						@Override
 						public void loadImageFinished(Bitmap bitmap,
 								String imageUrl) {
+							
+							Utils.LOGD("loadImageFinished imageUrl = " + imageUrl);
 							ImageView imageView = (ImageView) mListView
 									.findViewWithTag(imageUrl);
 							if (imageView != null) {
+								imageView.setVisibility(View.VISIBLE);
 								imageView.setImageBitmap(bitmap);
 							}
 

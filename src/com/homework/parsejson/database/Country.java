@@ -11,23 +11,13 @@ import java.util.List;
  */
 public class Country {
 
-	private String mTitle;
-	private List<Feature> mFeatures;
+	public String mTitle;
+	public List<Feature> mFeatures;
 
 	public Country() {
 		mFeatures = new ArrayList<Feature>();
 		mTitle = null;
 		mFeatures.clear();
-	}
-
-	public void setTitle(String title) {
-		if (title == null)
-			title = "";
-		mTitle = title;
-	}
-
-	public String getTitle() {
-		return mTitle;
 	}
 
 	public void addOneFeatureToLast(Feature feature) {
@@ -38,18 +28,7 @@ public class Country {
 		mFeatures.remove(mFeatures.size() - 1);
 	}
 
-	public String getFeatureTitleByPos(int pos) {
-		return mFeatures.get(pos).getTitle();
-	}
-
-	public String getFeatureDescriptionByPos(int pos) {
-		return mFeatures.get(pos).getDescription();
-	}
-
-	public String getFeatureImageHrefByPos(int pos) {
-		return mFeatures.get(pos).getImageHref();
-	}
-
+	
 	public int getFeaturesSize() {
 		return mFeatures.size();
 	}
@@ -61,8 +40,10 @@ public class Country {
 	public void clear() {
 		if (mTitle != null)
 			mTitle = null;
-		if (mFeatures != null && mFeatures.size() > 0) {
-			mFeatures.clear();
+		if (mFeatures != null) {
+			if(mFeatures.size() > 0){
+				mFeatures.clear();
+			}
 			mFeatures = null;
 		}
 	}
